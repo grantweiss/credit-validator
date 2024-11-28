@@ -1,19 +1,23 @@
-import express from "express";
+import express, { Application } from "express";
 import cors from "cors";
-import bodyParser from "body-parser";
+import routes from "./api/routes";
+import { errorMiddleware } from "./api/middleware/error";
 
 const PORT = process.env.PORT || 3000;
+const app: Application = express();
 
-const app = express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+
+app.use("/api", routes);
 
 app.use("/some-data", (req, res) => {
   res.json({ message: "Hello World" });
-  console.log("test");
 });
 
-app.listen(3000, () => {
+app.use(errorMiddleware);
+
+app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
