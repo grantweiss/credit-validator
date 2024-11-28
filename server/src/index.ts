@@ -11,11 +11,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.use("/api", routes);
-
-app.use("/some-data", (req, res) => {
-  res.json({ message: "Hello World" });
-});
-
 app.use(errorMiddleware);
 
 app.listen(PORT, () => {
