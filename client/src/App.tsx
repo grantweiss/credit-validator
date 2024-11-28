@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import americanExpressLogo from "./assets/american-express.svg";
+import visaLogo from "./assets/visa.svg";
+import mastercardLogo from "./assets/mastercard.svg";
+import discoverLogo from "./assets/discover.svg";
 import "./App.css";
 
 function App() {
@@ -19,12 +21,23 @@ function App() {
   console.log(data);
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
+      <div className="flex justify-center items-center bg-gray-100">
+        <h1 className="text-4xl font-bold text-blue-500">
+          Hello, Tailwind CSS!
+        </h1>
+      </div>
+      <div className="grid grid-cols-2 gap-4 p-4">
+        <a href="https://react.dev" target="_blank">
+          <img src={americanExpressLogo} alt="American Express logo" />
         </a>
         <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
+          <img src={visaLogo} alt="Visa logo" />
+        </a>
+        <a href="https://react.dev" target="_blank">
+          <img src={mastercardLogo} alt="Mastercard logo" />
+        </a>
+        <a href="https://react.dev" target="_blank">
+          <img src={discoverLogo} alt="Discover logo" />
         </a>
       </div>
       <h1>Vite + React</h1>
@@ -32,13 +45,7 @@ function App() {
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   );
 }
