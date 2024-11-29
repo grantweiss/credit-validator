@@ -2,7 +2,9 @@ import express, { Application } from "express";
 import cors from "cors";
 import routes from "./api/routes";
 import { errorMiddleware } from "./api/middleware/error";
+import OrderHistory from "./cache/OrderHistory";
 
+export const OrderStore = new OrderHistory();
 const PORT = process.env.PORT || 3000;
 const app: Application = express();
 
