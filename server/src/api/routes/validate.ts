@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { isValidCreditCard } from "../utils/isValidCreditCard";
 import { type CardReq } from "../types";
-import { OrderStore } from "../..";
+import OrderHistory from "../../cache/OrderHistory";
 
 const router = Router();
 
@@ -16,11 +16,11 @@ router.post("/card", (req: CardReq, res: any) => {
 
   const trimmedCardNumber = cardNumber.trim();
   const isValid = isValidCreditCard(trimmedCardNumber);
-  const id = OrderStore.createEntry(trimmedCardNumber, isValid);
+  const id = OrderHistory.createEntry(trimmedCardNumber, isValid);
 
   return res.json({
     id,
-    redactedCardNumber: OrderStore.getEntry(id)?.redactedCardNumber || "",
+    redactedCardNumber: OrderHistory.getEntry(id)?.redactedCardNumber || "",
     isValid,
     message: isValid ? "Card is valid" : "Card is invalid",
   });

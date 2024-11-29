@@ -40,4 +40,4 @@ class OrderHistory {
   }
 }
 
-export default OrderHistory;
+export default new OrderHistory();
