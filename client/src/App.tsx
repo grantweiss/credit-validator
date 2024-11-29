@@ -1,61 +1,36 @@
+import { useMutation } from "@tanstack/react-query";
 import { ChangeEvent, FormEvent, useState } from "react";
-import useCardType from "./hooks/useCardType";
-// import useValCard from "./hooks/useValidateCard";
-import LoadingButton from "./components/LoadingButton";
 import "./App.css";
+import LoadingButton from "./components/LoadingButton";
 import ValidatedInput from "./components/ValidatedInput";
 import ValidatedLabel from "./components/ValidatedLabel";
+import useCardType from "./hooks/useCardType";
+import validateCard, { ValidationResponse } from "./routes/validateCard";
 
 function App() {
   const { cardType, cardLogo, detectCardType } = useCardType();
   const [creditCard, setCreditCard] = useState("");
   const [ofLength, setOfLength] = useState(false);
-  const [isValid, setIsValid] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+
+  const query = useMutation<ValidationResponse, Error, string>({
+    mutationFn: validateCard,
+    onSuccess: (data) => {
+      if (data.valid) setCreditCard("");
+    },
+  });
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "");
-    if (value && isValid) setMessage("");
+    if (value && query?.data?.valid) query.reset();
 
     detectCardType(value);
     setCreditCard(value);
     setOfLength(value.length >= 15);
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API}/api/validate/card`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cardNumber: creditCard }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("An unexpected error occurred");
-      }
-
-      const data: { valid: boolean; message: string } = await response.json();
-      setMessage(data.message);
-
-      if (data.valid) {
-        setCreditCard("");
-        setIsValid(true);
-      } else {
-        setIsValid(false);
-      }
-    } catch (error) {
-      setMessage("An error occurred. Please try again.");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+    query.mutate(creditCard);
   };
 
   return (
@@ -87,8 +62,8 @@ function App() {
 
         <div>
           <LoadingButton
-            loading={loading}
-            disabled={!ofLength}
+            loading={query.isPending}
+            disabled={!ofLength || query.isPending}
             type="submit"
             text="Purchase"
             loadingText="Processing..."
@@ -97,9 +72,9 @@ function App() {
 
           <p
             className={`mt-4 text-center font-medium
-              ${isValid ? "text-green-600" : "text-red-600"}`}
+              ${query?.data?.valid ? "text-green-600" : "text-red-600"}`}
           >
-            {message}
+            {query?.data?.message || query?.error?.message}
           </p>
         </div>
       </form>
