@@ -15,13 +15,13 @@ function App() {
   const query = useMutation<ValidationResponse, Error, string>({
     mutationFn: validateCard,
     onSuccess: (data) => {
-      if (data.valid) setCreditCard("");
+      if (data.isValid) setCreditCard("");
     },
   });
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "");
-    if (value && query?.data?.valid) query.reset();
+    if (value && query?.data?.isValid) query.reset();
 
     detectCardType(value);
     setCreditCard(value);
@@ -70,7 +70,7 @@ function App() {
 
           <p
             className={`mt-4 text-center font-medium
-              ${query?.data?.valid ? "text-green-600" : "text-red-600"}`}
+              ${query?.data?.isValid ? "text-green-600" : "text-red-600"}`}
           >
             {query?.data?.message || query?.error?.message}
           </p>
