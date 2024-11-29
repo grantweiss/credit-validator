@@ -1,34 +1,13 @@
-import { ChangeEvent, FormEvent, useMemo, useState } from "react";
-import americanExpressLogo from "./assets/american-express.svg";
-import visaLogo from "./assets/visa.svg";
-import mastercardLogo from "./assets/mastercard.svg";
-import discoverLogo from "./assets/discover.svg";
+import { ChangeEvent, FormEvent, useState } from "react";
+import useCardType from "./hooks/useCardType";
+// import useValCard from "./hooks/useValidateCard";
+import LoadingButton from "./components/LoadingButton";
 import "./App.css";
-
-const cardMap: Record<string, string> = {
-  visa: visaLogo,
-  amex: americanExpressLogo,
-  mastercard: mastercardLogo,
-  discover: discoverLogo,
-};
-
-const getCardType = (number: string): string => {
-  const cardPatterns: { [key: string]: RegExp } = {
-    visa: /^4/,
-    mastercard: /^(5[1-5]|22[2-9][1-9]|2[3-6]\d{2}|27[01]\d|2720)/,
-    amex: /^3[47]/,
-    discover: /^(6011|65|64[4-9]|622)/,
-  };
-
-  for (const [card, pattern] of Object.entries(cardPatterns)) {
-    if (pattern.test(number)) {
-      return card;
-    }
-  }
-  return "";
-};
+import ValidatedInput from "./components/ValidatedInput";
+import ValidatedLabel from "./components/ValidatedLabel";
 
 function App() {
+  const { cardType, cardLogo, detectCardType } = useCardType();
   const [creditCard, setCreditCard] = useState("");
   const [ofLength, setOfLength] = useState(false);
   const [isValid, setIsValid] = useState(false);
@@ -37,15 +16,16 @@ function App() {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "");
+    if (value && isValid) setMessage("");
+
+    detectCardType(value);
     setCreditCard(value);
     setOfLength(value.length >= 15);
-    if (value) setMessage("");
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
 
     try {
       const response = await fetch(
@@ -78,10 +58,6 @@ function App() {
     }
   };
 
-  const displayCard = useMemo(() => {
-    return cardMap[getCardType(creditCard)];
-  }, [creditCard]);
-
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
       <form
@@ -92,55 +68,40 @@ function App() {
           Billing Information
         </h2>
 
-        <div className="mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Credit Card Number
-            </label>
-            {displayCard && (
-              <img
-                src={displayCard}
-                alt="Card logo"
-                style={{ width: 60, height: 20 }}
-                className="-mr-3"
-              />
-            )}
-          </div>
-
-          <div className="relative">
-            <input
-              type="text"
-              value={creditCard}
-              onChange={handleInputChange}
-              maxLength={19}
-              placeholder="Enter your card number"
-              className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
-            {ofLength && (
-              <span className="absolute inset-y-0 right-3 flex items-center text-green-500">
-                ✓
-              </span>
-            )}
-          </div>
+        <div className="mb-4 min-h-10">
+          <ValidatedLabel
+            label="Credit Card Number"
+            cardType={cardType}
+            cardLogo={cardLogo}
+            value={creditCard}
+          />
+          <ValidatedInput
+            value={creditCard}
+            onChange={handleInputChange}
+            maxLength={19}
+            placeholder="Enter your card number"
+            isValid={ofLength && Boolean(creditCard)}
+            className="mb-4"
+          />
         </div>
 
-        <button
-          type="submit"
-          disabled={loading || !ofLength}
-          className={`w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded ${
-            loading || !ofLength ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-        >
-          {loading ? "Processing..." : "Purchase"}
-        </button>
+        <div>
+          <LoadingButton
+            loading={loading}
+            disabled={!ofLength}
+            type="submit"
+            text="Purchase"
+            loadingText="Processing..."
+            className="mt-4"
+          />
 
-        <p
-          className={`mt-4 text-center font-medium ${
-            isValid ? "text-green-600" : "text-red-600"
-          }`}
-        >
-          {message || ""}
-        </p>
+          <p
+            className={`mt-4 text-center font-medium
+              ${isValid ? "text-green-600" : "text-red-600"}`}
+          >
+            {message}
+          </p>
+        </div>
       </form>
     </div>
   );
