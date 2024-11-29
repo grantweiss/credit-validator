@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useMemo, useState } from "react";
 import "./App.css";
 import LoadingButton from "./components/LoadingButton";
 import ValidatedInput from "./components/ValidatedInput";
@@ -10,8 +10,8 @@ import validateCard, { ValidationResponse } from "./routes/validateCard";
 function App() {
   const { cardType, cardLogo, detectCardType } = useCardType();
   const [creditCard, setCreditCard] = useState("");
-  const [ofLength, setOfLength] = useState(false);
 
+  const validLength = useMemo(() => creditCard.length >= 15, [creditCard]);
   const query = useMutation<ValidationResponse, Error, string>({
     mutationFn: validateCard,
     onSuccess: (data) => {
@@ -25,7 +25,6 @@ function App() {
 
     detectCardType(value);
     setCreditCard(value);
-    setOfLength(value.length >= 15);
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -36,14 +35,14 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
       <form
-        onSubmit={handleSubmit}
         className="bg-white p-6 rounded-lg shadow-md w-full max-w-lg min-h-full"
+        onSubmit={handleSubmit}
       >
         <h2 className="text-2xl font-semibold text-center mb-4">
           Billing Information
         </h2>
 
-        <div className="mb-4 min-h-10">
+        <div className="mb-4">
           <ValidatedLabel
             label="Credit Card Number"
             cardType={cardType}
@@ -55,15 +54,14 @@ function App() {
             onChange={handleInputChange}
             maxLength={19}
             placeholder="Enter your card number"
-            isValid={ofLength && Boolean(creditCard)}
-            className="mb-4"
+            isValid={validLength && Boolean(creditCard)}
           />
         </div>
 
         <div>
           <LoadingButton
             loading={query.isPending}
-            disabled={!ofLength || query.isPending}
+            disabled={!validLength || query.isPending}
             type="submit"
             text="Purchase"
             loadingText="Processing..."
