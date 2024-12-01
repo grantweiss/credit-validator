@@ -4,9 +4,9 @@ CreditVal is a modern web application designed to simplify credit valuation and 
 
 ## 🚀 Features
 
-- **Real-time Data Fetching**: Uses React Query for seamless, optimized server-state management.
-- **Fast & Scalable Frontend**: Developed with React and Vite for blazing-fast development and runtime performance.
-- **Secure Backend**: Express.js powers the backend, ensuring a secure and efficient API layer.
+- **Data Fetching**: Uses React Query for seamless, optimized server-state management.
+- **Frontend**: Developed with React and Vite for blazing-fast development and runtime performance.
+- **Backend**: Express.js powers the backend, ensuring a secure and efficient API layer.
 - **Deployment**: Hosted on [Vercel](https://vercel.com), ensuring a globally distributed, highly available application.
 
 ## 🌐 Live Demo
