@@ -1,13 +1,14 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ChangeEvent, FormEvent, useMemo, useState } from "react";
 import "./App.css";
 import LoadingButton from "./components/LoadingButton";
+import Modal from "./components/Modal";
+import Navbar from "./components/Navbar";
+import Toast from "./components/Toast";
 import ValidatedInput from "./components/ValidatedInput";
 import ValidatedLabel from "./components/ValidatedLabel";
 import useCardType from "./hooks/useCardType";
 import validateCard, { ValidationResponse } from "./routes/validateCard";
-import Toast from "./components/Toast";
-import Modal from "./components/Modal";
 
 function App() {
   const { cardType, cardLogo, detectCardType } = useCardType();
@@ -16,12 +17,17 @@ function App() {
   const [showModal, setShowModal] = useState(false);
 
   const validLength = useMemo(() => creditCard.length >= 15, [creditCard]);
+
+  const queryClient = useQueryClient();
   const query = useMutation<ValidationResponse, Error, string>({
     mutationFn: validateCard,
     onSuccess: (data) => {
       if (data.isValid) {
         setCreditCard("");
         setShowToast(true);
+        queryClient.invalidateQueries({
+          queryKey: ["validatedCards"],
+        });
 
         setTimeout(() => {
           setShowToast(false);
@@ -45,9 +51,10 @@ function App() {
 
   return (
     <>
+      <Navbar />
       <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
         <form
-          className="bg-white p-6 rounded-lg shadow-md w-full max-w-lg min-h-full"
+          className="bg-white p-6 rounded-lg shadow-md w-full max-w-lg min-h-full mb-32"
           onSubmit={handleSubmit}
         >
           <h2 className="text-2xl font-semibold text-center mb-4">

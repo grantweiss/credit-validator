@@ -9,8 +9,14 @@ const Modal: FC<{
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+    <div
+      className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md"
+        onClick={(e) => e.stopPropagation()}
+      >
         <h2 className="text-xl font-semibold text-gray-800 mb-4">
           Card Details
         </h2>
