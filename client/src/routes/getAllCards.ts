@@ -6,7 +6,7 @@ export type StoreValidationResponse = {
   }[];
 };
 
-const getValidCards = async (): Promise<StoreValidationResponse> => {
+const getAllCards = async (): Promise<StoreValidationResponse> => {
   const response = await fetch(`${import.meta.env.VITE_API}/api/store`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
@@ -21,4 +21,4 @@ const getValidCards = async (): Promise<StoreValidationResponse> => {
   return data;
 };
 
-export default getValidCards;
+export default getAllCards;

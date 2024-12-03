@@ -1,6 +1,6 @@
 import React from "react";
 import { IoMdClose } from "react-icons/io";
-import { StoreValidationResponse } from "../routes/getValidCards";
+import { StoreValidationResponse } from "../routes/getAllCards";
 
 type ValidatedCardsModalProps = {
   isModalOpen: boolean;

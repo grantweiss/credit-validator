@@ -22,12 +22,13 @@ function App() {
   const query = useMutation<ValidationResponse, Error, string>({
     mutationFn: validateCard,
     onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ["validatedCards"],
+      });
+
       if (data.isValid) {
         setCreditCard("");
         setShowToast(true);
-        queryClient.invalidateQueries({
-          queryKey: ["validatedCards"],
-        });
 
         setTimeout(() => {
           setShowToast(false);

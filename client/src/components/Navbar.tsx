@@ -3,9 +3,7 @@ import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { RxHamburgerMenu } from "react-icons/rx";
 import useCollapseOnResize from "../hooks/useCollapse";
-import getValidCards, {
-  StoreValidationResponse,
-} from "../routes/getValidCards";
+import getValidCards, { StoreValidationResponse } from "../routes/getAllCards";
 import Cards from "./Cards";
 
 const Navbar = () => {
